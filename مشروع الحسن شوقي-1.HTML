@@ -1,0 +1,1000 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>نظام إدارة المكتبة</title>
+    <style>
+        /* التصميم الأساسي */
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Arial, sans-serif;
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            color: #333;
+            line-height: 1.6;
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        .header {
+            background: linear-gradient(135deg, #b01372, #dcf027);
+            color: white;
+            padding: 40px;
+            border-radius: 15px;
+            margin-bottom: 25px;
+            box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .header::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            right: 0;
+            width: 100%;
+            height: 100%;
+            background: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" preserveAspectRatio="none"><path d="M0,0 L100,0 L100,100 Z" fill="rgba(255,255,255,0.1)"/></svg>');
+            background-size: cover;
+        }
+        
+        .header h1 {
+            margin: 0;
+            font-size: 32px;
+            position: relative;
+        }
+        
+        .header p {
+            margin-top: 10px;
+            opacity: 0.9;
+            position: relative;
+        }
+        
+        .content {
+            display: flex;
+            gap: 25px;
+            margin-bottom: 25px;
+        }
+        
+        .sidebar {
+            width: 30%;
+            background: white;
+            border-radius: 15px;
+            padding: 25px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.08);
+        }
+        
+        .main-content {
+            width: 70%;
+            background: white;
+            border-radius: 15px;
+            padding: 25px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.08);
+        }
+        
+        /* تصميم النماذج */
+        .form-section {
+            margin-bottom: 30px;
+            padding-bottom: 20px;
+            border-bottom: 1px solid #eee;
+        }
+        
+        .form-section:last-child {
+            border-bottom: none;
+        }
+        
+        .form-section h2 {
+            color: #2c3e50;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #3498db;
+            font-size: 22px;
+        }
+        
+        .form-group {
+            margin-bottom: 20px;
+        }
+        
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #2c3e50;
+        }
+        
+        input, select {
+            width: 100%;
+            padding: 12px 15px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            font-size: 16px;
+            transition: all 0.3s;
+        }
+        
+        input:focus, select:focus {
+            outline: none;
+            border-color: #3498db;
+            box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.2);
+        }
+        
+        button {
+            background: linear-gradient(135deg, #3498db, #2980b9);
+            color: white;
+            border: none;
+            padding: 12px 20px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: 600;
+            transition: all 0.3s;
+            width: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+        
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+        
+        .btn-danger {
+            background: linear-gradient(135deg, #e74c3c, #c0392b);
+        }
+        
+        .btn-success {
+            background: linear-gradient(135deg, #27ae60, #219653);
+        }
+        
+        .btn-warning {
+            background: linear-gradient(135deg, #f39c12, #e67e22);
+        }
+        
+        /* تصميم الجداول */
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+        }
+        
+        th, td {
+            border: 1px solid #e0e0e0;
+            padding: 14px;
+            text-align: center;
+        }
+        
+        th {
+            background: linear-gradient(135deg, #34495e, #2c3e50);
+            color: white;
+            font-weight: 600;
+        }
+        
+        tr:nth-child(even) {
+            background-color: #f8f9fa;
+        }
+        
+        tr:hover {
+            background-color: #f1f8ff;
+        }
+        
+        .action-btn {
+            padding: 8px 12px;
+            font-size: 14px;
+            width: auto;
+            margin: 2px;
+        }
+        
+        /* تصميم أدوات البحث والتحكم */
+        .controls {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 25px;
+            flex-wrap: wrap;
+            gap: 15px;
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 10px;
+        }
+        
+        .search-box {
+            display: flex;
+            gap: 10px;
+            flex: 1;
+        }
+        
+        .search-box input {
+            width: 100%;
+            min-width: 250px;
+        }
+        
+        .action-buttons {
+            display: flex;
+            gap: 10px;
+        }
+        
+        /* تصميم متجاوب */
+        @media (max-width: 992px) {
+            .content {
+                flex-direction: column;
+            }
+            
+            .sidebar, .main-content {
+                width: 100%;
+            }
+        }
+        
+        @media (max-width: 768px) {
+            .controls {
+                flex-direction: column;
+            }
+            
+            .search-box {
+                width: 100%;
+            }
+            
+            .search-box input {
+                min-width: auto;
+            }
+            
+            .action-buttons {
+                width: 100%;
+                justify-content: space-between;
+            }
+            
+            th, td {
+                padding: 10px 5px;
+                font-size: 14px;
+            }
+        }
+        
+        /* رسائل التنبيه */
+        .alert {
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            display: none;
+            animation: fadeIn 0.5s;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+        
+        .alert-success {
+            background-color: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+        
+        .alert-error {
+            background-color: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+        
+        /* تصميم إضافي */
+        .stats {
+        
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 25px;
+            gap: 15px;
+        }
+        
+        .stat-card {
+            background: rgb(20, 188, 23);
+            border-radius: 10px;
+            padding: 20px;
+            text-align: center;
+            box-shadow: 0 3px 10px rgba(0,0,0,0.08);
+            flex: 1;
+            transition: transform 0.3s;
+        }
+        
+        .stat-card:hover {
+            transform: translateY(-5px);
+        }
+        
+        .stat-card h3 {
+            color: #2c3e50;
+            margin-bottom: 10px;
+            font-size: 16px;
+        }
+        
+        .stat-card .number {
+            font-size: 32px;
+            font-weight: bold;
+            color: #3498db;
+        }
+        
+        .book-available {
+            color: #27ae60;
+            font-weight: bold;
+        }
+        
+        .book-borrowed {
+            color: #e74c3c;
+            font-weight: bold;
+        }
+        
+        .section-title {
+            color: #2c3e50;
+            margin: 25px 0 15px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #3498db;
+            font-size: 24px;
+        }
+        
+        .tabs {
+            display: flex;
+            margin-bottom: 20px;
+            border-bottom: 1px solid #ddd;
+        }
+        
+        .tab {
+            padding: 12px 25px;
+            cursor: pointer;
+            background: #f8f9fa;
+            border: 1px solid #ddd;
+            border-bottom: none;
+            border-radius: 8px 8px 0 0;
+            margin-left: 5px;
+            transition: all 0.3s;
+        }
+        
+        .tab.active {
+            background: #3498db;
+            color: white;
+            border-color: #3498db;
+        }
+        
+        .tab-content {
+            display: none;
+        }
+        
+        .tab-content.active {
+            display: block;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>نظام إدارة المكتبة</h1>
+            <p>أداة متكاملة لإدارة الكتب وعمليات الإعارة في المكتبة</p>
+        </div>
+        
+        <div class="stats">
+            <div class="stat-card">
+                <h3>إجمالي الكتب</h3>
+                <div class="number" id="totalBooks">0</div>
+            </div>
+            <div class="stat-card">
+                <h3>الكتب المتاحة</h3>
+                <div class="number" id="availableBooks">0</div>
+            </div>
+            <div class="stat-card">
+                <h3>الكتب المعارة</h3>
+                <div class="number" id="borrowedBooks">0</div>
+            </div>
+            <div class="stat-card">
+                <h3>إجمالي الأعضاء</h3>
+                <div class="number" id="totalMembers">0</div>
+            </div>
+        </div>
+        
+        <div class="alert alert-success" id="successAlert"></div>
+        <div class="alert alert-error" id="errorAlert"></div>
+        
+        <div class="content">
+            <div class="sidebar">
+                <div class="form-section">
+                    <h2>إضافة كتاب جديد</h2>
+                    <form id="bookForm">
+                        <div class="form-group">
+                            <label for="bookTitle">عنوان الكتاب</label>
+                            <input type="text" id="bookTitle" required placeholder="أدخل عنوان الكتاب">
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="bookAuthor">المؤلف</label>
+                            <input type="text" id="bookAuthor" required placeholder="أدخل اسم المؤلف">
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="bookCategory">التصنيف</label>
+                            <select id="bookCategory" required>
+                                <option value="">اختر التصنيف</option>
+                                <option value="أدب">أدب</option>
+                                <option value="علوم">علوم</option>
+                                <option value="تاريخ">تاريخ</option>
+                                <option value="فلسفة">فلسفة</option>
+                                <option value="دين">دين</option>
+                                <option value="تقنية">تقنية</option>
+                                <option value="أخرى">أخرى</option>
+                            </select>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="bookIsbn">رقم ISBN</label>
+                            <input type="text" id="bookIsbn" placeholder="أدخل رقم ISBN">
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="bookYear">سنة النشر</label>
+                            <input type="number" id="bookYear" min="1900" max="2030" placeholder="سنة النشر">
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="bookCopies">عدد النسخ</label>
+                            <input type="number" id="bookCopies" min="1" value="1">
+                        </div>
+                        
+                        <button type="submit">إضافة الكتاب</button>
+                    </form>
+                </div>
+                
+                <div class="form-section">
+                    <h2>إعارة كتاب</h2>
+                    <form id="borrowForm">
+                        <div class="form-group">
+                            <label for="borrowBook">اختر الكتاب</label>
+                            <select id="borrowBook" required>
+                                <option value="">اختر الكتاب</option>
+                            </select>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="borrowerName">اسم المستعير</label>
+                            <input type="text" id="borrowerName" required placeholder="أدخل اسم المستعير">
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="borrowDate">تاريخ الإعارة</label>
+                            <input type="date" id="borrowDate" required>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="returnDate">تاريخ الاسترجاع المتوقع</label>
+                            <input type="date" id="returnDate" required>
+                        </div>
+                        
+                        <button type="submit">تسجيل الإعارة</button>
+                    </form>
+                </div>
+            </div>
+            
+            <div class="main-content">
+                <div class="tabs">
+                    <div class="tab active" data-tab="books">قائمة الكتب</div>
+                    <div class="tab" data-tab="borrows">سجل الإعارة</div>
+                    <div class="tab" data-tab="members">الأعضاء</div>
+                </div>
+                
+                <div class="tab-content active" id="books-tab">
+                    <div class="controls">
+                        <div class="search-box">
+                            <input type="text" id="searchInput" placeholder="ابحث عن كتاب بالمؤلف أو العنوان...">
+                            <select id="categoryFilter">
+                                <option value="">جميع التصنيفات</option>
+                                <option value="أدب">أدب</option>
+                                <option value="علوم">علوم</option>
+                                <option value="تاريخ">تاريخ</option>
+                                <option value="فلسفة">فلسفة</option>
+                                <option value="دين">دين</option>
+                                <option value="تقنية">تقنية</option>
+                                <option value="أخرى">أخرى</option>
+                            </select>
+                        </div>
+                        
+                        <div class="action-buttons">
+                            <button id="exportBtn" class="btn-success">تصدير إلى Excel</button>
+                            <button id="resetBtn" class="btn-danger">مسح البيانات</button>
+                        </div>
+                    </div>
+                    
+                    <table id="booksTable">
+                        <thead>
+                            <tr>
+                                <th>م</th>
+                                <th>عنوان الكتاب</th>
+                                <th>المؤلف</th>
+                                <th>التصنيف</th>
+                                <th>رقم ISBN</th>
+                                <th>سنة النشر</th>
+                                <th>النسخ المتاحة</th>
+                                <th>الإجراءات</th>
+                            </tr>
+                        </thead>
+                        <tbody id="booksTableBody">
+                        </tbody>
+                    </table>
+                </div>
+                
+                <div class="tab-content" id="borrows-tab">
+                    <h2 class="section-title">سجل الإعارة</h2>
+                    <table id="borrowTable">
+                        <thead>
+                            <tr>
+                                <th>م</th>
+                                <th>اسم المستعير</th>
+                                <th>عنوان الكتاب</th>
+                                <th>تاريخ الإعارة</th>
+                                <th>تاريخ الاسترجاع المتوقع</th>
+                                <th>الحالة</th>
+                                <th>الإجراءات</th>
+                            </tr>
+                        </thead>
+                        <tbody id="borrowTableBody">
+                        </tbody>
+                    </table>
+                </div>
+                
+                <div class="tab-content" id="members-tab">
+                    <h2 class="section-title">قائمة الأعضاء</h2>
+                    <table id="membersTable">
+                        <thead>
+                            <tr>
+                                <th>م</th>
+                                <th>اسم العضو</th>
+                                <th>البريد الإلكتروني</th>
+                                <th>رقم الهاتف</th>
+                                <th>عدد الكتب المعارة</th>
+                                <th>تاريخ التسجيل</th>
+                                <th>الإجراءات</th>
+                            </tr>
+                        </thead>
+                        <tbody id="membersTableBody">
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // بيانات افتراضية
+        const defaultBooks = [
+            {id: 1, title: "الأيام", author: "طه حسين", category: "أدب", isbn: "9789770920385", year: 1929, copies: 5, available: 3},
+            {id: 2, title: "العقد الاجتماعي", author: "جان جاك روسو", category: "فلسفة", isbn: "9780140442014", year: 1762, copies: 3, available: 2},
+            {id: 3, title: "القراءة السريعة", author: "بيتر كامب", category: "تقنية", isbn: "9789770930385", year: 2010, copies: 4, available: 4},
+            {id: 4, title: "قصة الحضارة", author: "ويل ديورانت", category: "تاريخ", isbn: "9789770940385", year: 1935, copies: 2, available: 1}
+        ];
+        
+        const defaultBorrows = [
+            {id: 1, bookId: 1, borrowerName: "أحمد محمد", borrowDate: "2023-10-01", returnDate: "2023-10-15", returned: false},
+            {id: 2, bookId: 2, borrowerName: "سارة علي", borrowDate: "2023-10-05", returnDate: "2023-10-20", returned: true},
+            {id: 3, bookId: 1, borrowerName: "محمد خالد", borrowDate: "2023-10-10", returnDate: "2023-10-25", returned: false}
+        ];
+        
+        const defaultMembers = [
+            {id: 1, name: "أحمد محمد", email: "ahmed@example.com", phone: "0123456789", joinDate: "2023-01-15"},
+            {id: 2, name: "سارة علي", email: "sara@example.com", phone: "0123456790", joinDate: "2023-02-20"},
+            {id: 3, name: "محمد خالد", email: "mohamed@example.com", phone: "0123456791", joinDate: "2023-03-10"}
+        ];
+        
+        // جلب البيانات من localStorage أو استخدام البيانات الافتراضية
+        let books = JSON.parse(localStorage.getItem("libraryBooks")) || [...defaultBooks];
+        let borrows = JSON.parse(localStorage.getItem("libraryBorrows")) || [...defaultBorrows];
+        let members = JSON.parse(localStorage.getItem("libraryMembers")) || [...defaultMembers];
+        
+        // حفظ البيانات في localStorage
+        function saveData() {
+            localStorage.setItem("libraryBooks", JSON.stringify(books));
+            localStorage.setItem("libraryBorrows", JSON.stringify(borrows));
+            localStorage.setItem("libraryMembers", JSON.stringify(members));
+            updateStats();
+        }
+        
+        // تحديث الإحصائيات
+        function updateStats() {
+            const totalBooks = books.reduce((sum, book) => sum + book.copies, 0);
+            const borrowedBooks = borrows.filter(b => !b.returned).length;
+            const availableBooks = totalBooks - borrowedBooks;
+            const totalMembers = members.length;
+            
+            document.getElementById('totalBooks').textContent = totalBooks;
+            document.getElementById('availableBooks').textContent = availableBooks;
+            document.getElementById('borrowedBooks').textContent = borrowedBooks;
+            document.getElementById('totalMembers').textContent = totalMembers;
+        }
+        
+        // عرض رسالة نجاح
+        function showSuccess(message) {
+            const alert = document.getElementById("successAlert");
+            alert.textContent = message;
+            alert.style.display = "block";
+            setTimeout(() => {
+                alert.style.display = "none";
+            }, 3000);
+        }
+        
+        // عرض رسالة خطأ
+        function showError(message) {
+            const alert = document.getElementById("errorAlert");
+            alert.textContent = message;
+            alert.style.display = "block";
+            setTimeout(() => {
+                alert.style.display = "none";
+            }, 3000);
+        }
+        
+        // عرض الكتب في الجدول
+        function renderBooksTable() {
+            const tbody = document.getElementById("booksTableBody");
+            tbody.innerHTML = "";
+            
+            books.forEach(book => {
+                const tr = document.createElement("tr");
+                
+                // حساب عدد الكتب المعارة لهذا الكتاب
+                const borrowedCount = borrows.filter(b => b.bookId === book.id && !b.returned).length;
+                const available = book.copies - borrowedCount;
+                
+                tr.innerHTML = `
+                    <td>${book.id}</td>
+                    <td>${book.title}</td>
+                    <td>${book.author}</td>
+                    <td>${book.category}</td>
+                    <td>${book.isbn}</td>
+                    <td>${book.year}</td>
+                    <td><span class="${available > 0 ? 'book-available' : 'book-borrowed'}">${available} / ${book.copies}</span></td>
+                    <td>
+                        <button onclick="deleteBook(${book.id})" class="btn-danger action-btn">حذف</button>
+                    </td>
+                `;
+                
+                tbody.appendChild(tr);
+            });
+            
+            // تحديث قائمة الكتب في نموذج الإعارة
+            updateBorrowBookSelect();
+        }
+        
+        // تحديث قائمة الكتب في نموذج الإعارة
+        function updateBorrowBookSelect() {
+            const select = document.getElementById("borrowBook");
+            select.innerHTML = '<option value="">اختر الكتاب</option>';
+            
+            books.forEach(book => {
+                // حساب عدد الكتب المعارة لهذا الكتاب
+                const borrowedCount = borrows.filter(b => b.bookId === book.id && !b.returned).length;
+                const available = book.copies - borrowedCount;
+                
+                if (available > 0) {
+                    const option = document.createElement("option");
+                    option.value = book.id;
+                    option.textContent = `${book.title} (متاح: ${available})`;
+                    select.appendChild(option);
+                }
+            });
+        }
+        
+        // عرض سجل الإعارة في الجدول
+        function renderBorrowTable() {
+            const tbody = document.getElementById("borrowTableBody");
+            tbody.innerHTML = "";
+            
+            borrows.forEach(borrow => {
+                const tr = document.createElement("tr");
+                const book = books.find(b => b.id === borrow.bookId);
+                const bookTitle = book ? book.title : "غير معروف";
+                const status = borrow.returned ? "تم الاسترجاع" : "معار";
+                const statusClass = borrow.returned ? "book-available" : "book-borrowed";
+                
+                tr.innerHTML = `
+                    <td>${borrow.id}</td>
+                    <td>${borrow.borrowerName}</td>
+                    <td>${bookTitle}</td>
+                    <td>${borrow.borrowDate}</td>
+                    <td>${borrow.returnDate}</td>
+                    <td><span class="${statusClass}">${status}</span></td>
+                    <td>
+                        ${!borrow.returned ? `<button onclick="returnBook(${borrow.id})" class="btn-success action-btn">تسجيل الاسترجاع</button>` : ''}
+                        <button onclick="deleteBorrow(${borrow.id})" class="btn-danger action-btn">حذف</button>
+                    </td>
+                `;
+                
+                tbody.appendChild(tr);
+            });
+        }
+        
+        // عرض الأعضاء في الجدول
+        function renderMembersTable() {
+            const tbody = document.getElementById("membersTableBody");
+            tbody.innerHTML = "";
+            
+            members.forEach(member => {
+                const tr = document.createElement("tr");
+                
+                // حساب عدد الكتب المعارة لهذا العضو
+                const borrowedCount = borrows.filter(b => b.borrowerName === member.name && !b.returned).length;
+                
+                tr.innerHTML = `
+                    <td>${member.id}</td>
+                    <td>${member.name}</td>
+                    <td>${member.email}</td>
+                    <td>${member.phone}</td>
+                    <td>${borrowedCount}</td>
+                    <td>${member.joinDate}</td>
+                    <td>
+                        <button onclick="deleteMember(${member.id})" class="btn-danger action-btn">حذف</button>
+                    </td>
+                `;
+                
+                tbody.appendChild(tr);
+            });
+        }
+        
+        // إضافة كتاب جديد
+        document.getElementById("bookForm").addEventListener("submit", function(e) {
+            e.preventDefault();
+            
+            const nextId = books.length ? Math.max(...books.map(b => b.id)) + 1 : 1;
+            
+            const newBook = {
+                id: nextId,
+                title: document.getElementById("bookTitle").value.trim(),
+                author: document.getElementById("bookAuthor").value.trim(),
+                category: document.getElementById("bookCategory").value,
+                isbn: document.getElementById("bookIsbn").value.trim(),
+                year: parseInt(document.getElementById("bookYear").value) || new Date().getFullYear(),
+                copies: parseInt(document.getElementById("bookCopies").value) || 1
+            };
+            
+            // التحقق من عدم وجود كتاب بنفس العنوان والمؤلف
+            const existingBook = books.find(b => 
+                b.title === newBook.title && b.author === newBook.author
+            );
+            
+            if (existingBook) {
+                showError("هذا الكتاب موجود بالفعل في المكتبة");
+                return;
+            }
+            
+            books.push(newBook);
+            saveData();
+            renderBooksTable();
+            this.reset();
+            showSuccess("تم إضافة الكتاب بنجاح");
+        });
+        
+        // تسجيل إعارة كتاب
+        document.getElementById("borrowForm").addEventListener("submit", function(e) {
+            e.preventDefault();
+            
+            const bookId = parseInt(document.getElementById("borrowBook").value);
+            const borrowerName = document.getElementById("borrowerName").value.trim();
+            const borrowDate = document.getElementById("borrowDate").value;
+            const returnDate = document.getElementById("returnDate").value;
+            
+            if (!bookId || !borrowerName || !borrowDate || !returnDate) {
+                showError("يرجى ملء جميع الحقول");
+                return;
+            }
+            
+            // التحقق من توفر الكتاب
+            const book = books.find(b => b.id === bookId);
+            if (!book) {
+                showError("الكتاب غير موجود");
+                return;
+            }
+            
+            const borrowedCount = borrows.filter(b => b.bookId === bookId && !b.returned).length;
+            if (borrowedCount >= book.copies) {
+                showError("لا توجد نسخ متاحة من هذا الكتاب");
+                return;
+            }
+            
+            const nextId = borrows.length ? Math.max(...borrows.map(b => b.id)) + 1 : 1;
+            
+            const newBorrow = {
+                id: nextId,
+                bookId: bookId,
+                borrowerName: borrowerName,
+                borrowDate: borrowDate,
+                returnDate: returnDate,
+                returned: false
+            };
+            
+            borrows.push(newBorrow);
+            saveData();
+            renderBooksTable();
+            renderBorrowTable();
+            this.reset();
+            
+            // إعادة تعيين التواريخ
+            document.getElementById("borrowDate").valueAsDate = new Date();
+            const newReturnDate = new Date();
+            newReturnDate.setDate(newReturnDate.getDate() + 14);
+            document.getElementById("returnDate").valueAsDate = newReturnDate;
+            
+            showSuccess("تم تسجيل الإعارة بنجاح");
+        });
+        
+        // حذف كتاب
+        function deleteBook(id) {
+            if (!confirm("هل أنت متأكد من حذف هذا الكتاب؟")) {
+                return;
+            }
+            
+            // التحقق من عدم وجود إعارات نشطة لهذا الكتاب
+            const activeBorrows = borrows.filter(b => b.bookId === id && !b.returned);
+            if (activeBorrows.length > 0) {
+                showError("لا يمكن حذف الكتاب لأنه معار حالياً");
+                return;
+            }
+            
+            books = books.filter(b => b.id !== id);
+            saveData();
+            renderBooksTable();
+            showSuccess("تم حذف الكتاب بنجاح");
+        }
+        
+        // تسجيل استرجاع كتاب
+        function returnBook(id) {
+            const borrow = borrows.find(b => b.id === id);
+            if (borrow) {
+                borrow.returned = true;
+                saveData();
+                renderBooksTable();
+                renderBorrowTable();
+                showSuccess("تم تسجيل استرجاع الكتاب بنجاح");
+            }
+        }
+        
+        // حذف سجل إعارة
+        function deleteBorrow(id) {
+            if (!confirm("هل أنت متأكد من حذف سجل الإعارة هذا؟")) {
+                return;
+            }
+            
+            borrows = borrows.filter(b => b.id !== id);
+            saveData();
+            renderBorrowTable();
+            showSuccess("تم حذف سجل الإعارة بنجاح");
+        }
+        
+        // حذف عضو
+        function deleteMember(id) {
+            if (!confirm("هل أنت متأكد من حذف هذا العضو؟")) {
+                return;
+            }
+            
+            // التحقق من عدم وجود إعارات نشطة لهذا العضو
+            const member = members.find(m => m.id === id);
+            const activeBorrows = borrows.filter(b => b.borrowerName === member.name && !b.returned);
+            
+            if (activeBorrows.length > 0) {
+                showError("لا يمكن حذف العضو لأنه لديه كتب معارة حالياً");
+                return;
+            }
+            
+            members = members.filter(m => m.id !== id);
+            saveData();
+            renderMembersTable();
+            showSuccess("تم حذف العضو بنجاح");
+        }
+        
+        // تصدير البيانات إلى Excel
+        document.getElementById("exportBtn").addEventListener("click", function() {
+            let table = document.getElementById("booksTable").outerHTML;
+            
+            let style = `
+                <style>
+                    table, th, td {
+                        text-align: center;
+                        border: 1px solid black;
+                        border-collapse: collapse;
+                        font-family: Arial, sans-serif;
+                    }
+                    th {
+                        background-color: #2c3e50;
+                        color: white;
+                    }
+                </style>
+            `;
+            
+            let html = `
+                <html>
+                    <head>
+                        <meta charset="UTF-8">
+                        ${style}
+                    </head>
+                    <body>
+                        <h1>قائمة الكتب - نظام إدارة المكتبة</h1>
+                        ${table}
+                    </body>
+                </html>
+            `;
+            
+            let blob = new Blob([html], {type: "application/vnd.ms-excel;charset=utf-8"});
+            let link = document.createElement("a");
+            link.href = URL.createObjectURL(blob);
+            link.download = "library_books.xls";
+            link.click();
+        });
+        
+        // مسح جميع البيانات
+        document.getElementById("resetBtn").addEventListener("click", function() {
+            if (confirm("هل أنت متأكد من مسح جميع البيانات؟ سيتم فقدان جميع المعلومات.")) {
+                localStorage.removeItem("libraryBooks");
+                localStorage.removeItem("libraryBorrows");
+                localStorage.removeItem("libraryMembers");
+                books = [...defaultBooks];
+                borrows = [...defaultBorrows];
+                members = [...defaultMembers];
+                saveData();
+                renderBooksTable();
+                renderBorrowTable();
+                renderMembersTable();
+                showSuccess("تم مسح جميع البيانات بنجاح");
+            }
+        });
+        
+        // البحث والتصفية
+        document.getElementById("searchInput").addEventListener("input", filterTable);
+        document.getElementById("categoryFilter").addEventListener("change", filterTable);
+        
+        function filterTable() {
+            const searchText = document.getElementById("searchInput").value.toLowerCase();
+            const selectedCategory = document.getElementById("categoryFilter").value;
+            
+            const rows = document.querySelectorAll("#booksTableBody tr");
+            
+            rows.forEach(row => {
+                const title = row.cells[1].textContent.toLowerCase();
+                const author = row.cells[2].textContent.toLowerCase();
+                const category = row.cells[3].textContent;
+                
+                const titleMatches = title.includes(searchText);
+                const authorMatches = author.includes(searchText);
+                const categoryMatches = selectedCategory === "" || category === selectedCategory;
+                
+                const shouldShow = (titleMatches || authorMatches) && categoryMatches;
+                row.style.display = shouldShow ? "" : "none";
+            });
+        }
+        
+        // إدارة التبويبات
+        document.querySelectorAll('.tab').forEach(tab => {
+            tab.addEventListener('click', () => {
+                // إزالة النشاط من جميع التبويبات
+                document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+                document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+                
+                // إضافة النشاط للتبويب المحدد
+                tab.classList.add('active');
+                document.getElementById(`${tab.dataset.tab}-tab`).classList.add('active');
+            });
+        });
+        
+        // تهيئة التاريخين في نموذج الإعارة
+        document.getElementById("borrowDate").valueAsDate = new Date();
+        
+        const returnDate = new Date();
+        returnDate.setDate(returnDate.getDate() + 14); // إضافة أسبوعين
+        document.getElementById("returnDate").valueAsDate = returnDate;
+        
+        // التهيئة الأولية
+        renderBooksTable();
+        renderBorrowTable();
+        renderMembersTable();
+        updateStats();
+    </script>
+</body>
+</html>
